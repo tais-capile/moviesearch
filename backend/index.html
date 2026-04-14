@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>MovieSearch</title>
+
+<!-- FONTE MODERNA -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0f0f0f;
+    color: #f5f5f5;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 60px;
+    background: #0f0f0f;
+    border-bottom: 1px solid #222;
+}
+
+/* LOGO */
+.logo {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #e50914;
+}
+
+/* SEARCH */
+.search {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+    gap: 10px;
+}
+
+input {
+    padding: 14px;
+    width: 320px;
+    border-radius: 8px;
+    border: none;
+    background: #1c1c1c;
+    color: white;
+    outline: none;
+}
+
+button {
+    padding: 14px 20px;
+    background: #e50914;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #b20710;
+}
+
+/* CONTAINER CENTRAL */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    display: flex;
+    gap: 30px;
+    background: #181818;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.card img {
+    width: 220px;
+    border-radius: 12px;
+}
+
+/* INFO */
+.info h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.nota {
+    color: #46d369;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.info p {
+    color: #ccc;
+    line-height: 1.5;
+}
+
+/* NOTÍCIAS */
+.news {
+    margin-top: 30px;
+}
+
+.news h3 {
+    margin-bottom: 10px;
+}
+
+.news-item {
+    background: #1c1c1c;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.news-item:hover {
+    background: #252525;
+}
+
+.news-item h4 {
+    font-size: 15px;
+}
+
+.news-item p {
+    font-size: 13px;
+    color: #aaa;
+}
+
+.news-item a {
+    color: #4ea1ff;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+/* STATUS */
+.status {
+    text-align: center;
+    color: #888;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">Movie<span>Search</span></div>
+</div>
+
+<div class="search">
+    <input id="nome" placeholder="Buscar filme...">
+    <button onclick="buscar()">Buscar</button>
+</div>
+
+<div class="container" id="resultado"></div>
+
+<div class="status" id="status"></div>
+
+<script>
+async function buscar() {
+    const nome = document.getElementById('nome').value;
+    const status = document.getElementById('status');
+
+    status.innerText = "Carregando...";
+
+    try {
+        const res = await fetch(`http://localhost:3000/filme?nome=${nome}`);
+        const data = await res.json();
+
+        status.innerText = "";
+
+        let noticiasHTML = '';
+
+        data.noticias.forEach(n => {
+            noticiasHTML += `
+                <div class="news-item">
+                    <h4>${n.titulo}</h4>
+                    <p>${n.descricao || ''}</p>
+                    <a href="${n.link}" target="_blank">Ver notícia</a>
+                </div>
+            `;
+        });
+
+        document.getElementById('resultado').innerHTML = `
+            <div class="card">
+                <img src="${data.poster}">
+                <div class="info">
+                    <h2>${data.titulo} (${data.ano})</h2>
+                    <div class="nota">⭐ ${data.nota}</div>
+                    <p>${data.sinopse}</p>
+                </div>
+            </div>
+
+            <div class="news">
+                <h3>📰 Notícias relacionadas</h3>
+                ${noticiasHTML}
+            </div>
+        `;
+
+    } catch (err) {
+        status.innerText = "Erro ao buscar filme";
+    }
+}
+</script>
+
+</body>
+</html>
