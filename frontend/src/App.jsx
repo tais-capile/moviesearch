@@ -46,6 +46,11 @@ function App() {
           placeholder="Buscar filme..."
           value={nome}
           onChange={(e) => setNome(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              buscarFilme();
+            }
+          }}
         />
         <button onClick={buscarFilme}>Buscar</button>
       </div>
